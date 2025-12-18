@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ComergeRuntimeModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.comergeruntime.ComergeRuntimeModule"]
+  }
+}

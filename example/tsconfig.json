@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@comerge/runtime": ["../src/index"],
+      "@comerge/runtime/*": ["../src/*"]
+    }
+  }
+}
