@@ -5,11 +5,9 @@ import { ComergeRuntimeViewProps } from './ComergeRuntime.types';
 export default function ComergeRuntimeView(props: ComergeRuntimeViewProps) {
   return (
     <div>
-      <iframe
-        style={{ flex: 1 }}
-        src={props.url}
-        onLoad={() => props.onLoad({ nativeEvent: { url: props.url } })}
-      />
+      <div style={{ padding: 12, fontFamily: 'system-ui, sans-serif' }}>
+        ComergeRuntimeView is not supported on web. (Received appKey=&quot;{props.appKey}&quot;)
+      </div>
     </div>
   );
 }

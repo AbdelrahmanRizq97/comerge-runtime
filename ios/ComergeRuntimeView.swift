@@ -1,38 +1,31 @@
 import ExpoModulesCore
-import WebKit
 
-// This view will be used as a native component. Make sure to inherit from `ExpoView`
-// to apply the proper styling (e.g. border radius and shadows).
-class ComergeRuntimeView: ExpoView {
-  let webView = WKWebView()
-  let onLoad = EventDispatcher()
-  var delegate: WebViewDelegate?
+public final class ComergeRuntimeExpoView: ExpoView {
+  private let microAppView: UIView = {
+    let viewClass = (NSClassFromString("ComergeRuntimeView") as? UIView.Type) ?? UIView.self
+    return viewClass.init(frame: .zero)
+  }()
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     clipsToBounds = true
-    delegate = WebViewDelegate { url in
-      self.onLoad(["url": url])
-    }
-    webView.navigationDelegate = delegate
-    addSubview(webView)
+    addSubview(microAppView)
   }
 
-  override func layoutSubviews() {
-    webView.frame = bounds
-  }
-}
-
-class WebViewDelegate: NSObject, WKNavigationDelegate {
-  let onUrlChange: (String) -> Void
-
-  init(onUrlChange: @escaping (String) -> Void) {
-    self.onUrlChange = onUrlChange
+  public override func layoutSubviews() {
+    super.layoutSubviews()
+    microAppView.frame = bounds
   }
 
-  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation) {
-    if let url = webView.url {
-      onUrlChange(url.absoluteString)
-    }
+  func setAppKey(_ value: String?) {
+    microAppView.setValue(value ?? "", forKey: "appKey")
+  }
+
+  func setBundlePath(_ value: String?) {
+    microAppView.setValue(value ?? "", forKey: "bundlePath")
+  }
+
+  func setInitialProps(_ value: [String: Any]?) {
+    microAppView.setValue((value ?? [:]) as NSDictionary, forKey: "initialProps")
   }
 }

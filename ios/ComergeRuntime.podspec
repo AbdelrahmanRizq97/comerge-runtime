@@ -16,7 +16,6 @@ Pod::Spec.new do |s|
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/AbdelrahmanRizq97/comerge-runtime' }
-  s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
 
@@ -26,4 +25,7 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
+  s.public_header_files = [
+    "ComergeRuntimeView.h",
+  ]
 end

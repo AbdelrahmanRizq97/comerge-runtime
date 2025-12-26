@@ -38,6 +38,9 @@ local.properties
 android.iml
 android/app/libs
 android/keystores/debug.keystore
+**/debug.keystore
+**/*.keystore
+**/*.jks
 
 # Cocoapods
 #
@@ -50,8 +53,13 @@ example/vendor/
 #
 node_modules/
 npm-debug.log
+pnpm-debug.log
+pnpm-debug.log.*
 yarn-debug.log
 yarn-error.log
+*.log
+.npm-cache/
 
 # Expo
-.expo/*
+.expo/
+.expo-shared/

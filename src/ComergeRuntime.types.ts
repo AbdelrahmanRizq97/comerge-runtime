@@ -1,19 +1,10 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
 
-export type OnLoadEventPayload = {
-  url: string;
-};
+export type ComergeRuntimeInitialProps = Record<string, unknown>;
 
-export type ComergeRuntimeModuleEvents = {
-  onChange: (params: ChangeEventPayload) => void;
-};
-
-export type ChangeEventPayload = {
-  value: string;
-};
-
-export type ComergeRuntimeViewProps = {
-  url: string;
-  onLoad: (event: { nativeEvent: OnLoadEventPayload }) => void;
+export type ComergeRuntimeViewProps = ViewProps & {
+  appKey: string;
+  bundlePath: string;
+  initialProps?: ComergeRuntimeInitialProps;
   style?: StyleProp<ViewStyle>;
 };

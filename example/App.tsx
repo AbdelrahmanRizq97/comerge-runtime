@@ -1,35 +1,20 @@
-import { useEvent } from 'expo';
-import ComergeRuntime, { ComergeRuntimeView } from '@comerge/runtime';
-import { Button, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { MicroAppHost } from '@comerge/runtime';
 
 export default function App() {
-  const onChangePayload = useEvent(ComergeRuntime, 'onChange');
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
-        <Text style={styles.header}>Module API Example</Text>
-        <Group name="Constants">
-          <Text>{ComergeRuntime.PI}</Text>
-        </Group>
-        <Group name="Functions">
-          <Text>{ComergeRuntime.hello()}</Text>
-        </Group>
-        <Group name="Async functions">
-          <Button
-            title="Set value"
-            onPress={async () => {
-              await ComergeRuntime.setValueAsync('Hello from JS!');
-            }}
-          />
-        </Group>
-        <Group name="Events">
-          <Text>{onChangePayload?.value}</Text>
-        </Group>
-        <Group name="Views">
-          <ComergeRuntimeView
-            url="https://www.example.com"
-            onLoad={({ nativeEvent: { url } }) => console.log(`Loaded: ${url}`)}
+        <Text style={styles.header}>Comerge Runtime (Micro App Host)</Text>
+        <Group name="MicroAppHost">
+          <Text style={{ marginBottom: 12 }}>
+            Provide a local JS bundle file path (on device) to render a micro-app.
+          </Text>
+          <MicroAppHost
+            // Example defaults - you must provide a real on-device bundle path for this to render.
+            appKey="MicroMain"
+            bundlePath=""
+            initialProps={{}}
             style={styles.view}
           />
         </Group>

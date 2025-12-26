@@ -9,6 +9,22 @@ applyKotlinExpoModulesCorePlugin()
 useCoreDependencies()
 useExpoPublishing()
 
+// Resolve the React Native Android artifact version from the example app when building locally.
+// This ensures the module compiles against the same RN version as the consuming app.
+def resolveReactNativeVersion = {
+  try {
+    def rnPackageJson = new File(rootProject.projectDir, "../node_modules/react-native/package.json")
+    if (rnPackageJson.exists()) {
+      def text = rnPackageJson.text
+      def match = (text =~ /"version"\s*:\s*"([^"]+)"/)
+      if (match.find()) {
+        return match.group(1)
+      }
+    }
+  } catch (_ignored) {}
+  return null
+}
+
 // If you want to use the managed Android SDK versions from expo-modules-core, set this to true.
 // The Android SDK versions will be bumped from time to time in SDK releases and may introduce breaking changes in your module code.
 // Most of the time, you may like to manage the Android SDK versions yourself.
@@ -40,4 +56,13 @@ android {
   lintOptions {
     abortOnError false
   }
+}
+
+dependencies {
+  // Needed to compile references to com.facebook.react.* APIs used by this module.
+  // Use compileOnly so the consuming app provides React Native at runtime.
+  def rnVersion = resolveReactNativeVersion() ?: safeExtGet("reactNativeVersion", "0.81.5")
+  compileOnly("com.facebook.react:react-android:${rnVersion}")
+  // Some RN runtime classes may live in this artifact depending on configuration.
+  compileOnly("com.facebook.react:hermes-android:${rnVersion}")
 }
