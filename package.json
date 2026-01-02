@@ -33,7 +33,10 @@
     "@comergehq/runtime",
     "ComergeRuntime"
   ],
-  "repository": "https://github.com/AbdelrahmanRizq97/comerge-runtime",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbdelrahmanRizq97/comerge-runtime.git"
+  },
   "bugs": {
     "url": "https://github.com/AbdelrahmanRizq97/comerge-runtime/issues"
   },
