@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import <React/RCTBridge.h>
 
 @interface ComergeRuntimeView : UIView
 

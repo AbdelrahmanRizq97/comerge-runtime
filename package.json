@@ -6,6 +6,7 @@
   "types": "build/index.d.ts",
   "files": [
     "build",
+    "app.plugin.js",
     "ios",
     "android/build.gradle",
     "android/src",
