@@ -27,6 +27,7 @@ internal class Runtime private constructor(
   private val bundleFilePath: String,
   private val logger: ComergeRuntimeLogger,
 ) {
+  private val bundleSourceUrl: String = "file://$bundleFilePath"
   var host: ReactHost? = null
     private set
 
@@ -49,7 +50,8 @@ internal class Runtime private constructor(
       override val bindingsInstaller: com.facebook.react.runtime.BindingsInstaller? = null
       override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
         DefaultTurboModuleManagerDelegate.Builder()
-      override val jsBundleLoader: JSBundleLoader = JSBundleLoader.createFileLoader(bundleFilePath)
+      override val jsBundleLoader: JSBundleLoader =
+        JSBundleLoader.createFileLoader(bundleFilePath, bundleSourceUrl, false)
       override val jsMainModulePath: String = ComergeRuntimeContracts.JS_MAIN_MODULE_PATH
       override val jsRuntimeFactory: com.facebook.react.runtime.JSRuntimeFactory = HermesInstance()
       override val reactPackages: List<ReactPackage> = packages

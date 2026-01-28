@@ -85,7 +85,8 @@ static const NSTimeInterval kMicroAppContextInitStartDelaySeconds = 0.2;
   // Disable Dev overlays for this micro host and route fatals to NSLog
   @try { RCTRedBoxSetEnabled(NO); } @catch (__unused NSException *e) {}
   @try { RCTDevLoadingViewSetEnabled(NO); } @catch (__unused NSException *e) {}
-  self.tmDelegate = [ComergeRuntimeTurboModuleDelegate new];
+  NSURL *bundleURL = pathCopy.length > 0 ? [NSURL fileURLWithPath:pathCopy isDirectory:NO] : nil;
+  self.tmDelegate = [[ComergeRuntimeTurboModuleDelegate alloc] initWithBundleURL:bundleURL];
 
   Runtime *runtime = [[Runtime alloc] initWithBundlePath:pathCopy
                                turboModuleManagerDelegate:self.tmDelegate];
