@@ -6,8 +6,6 @@ Comerge runtime Expo module.
 
 ```sh
 npm install @comergehq/runtime
-# or
-yarn add @comergehq/runtime
 ```
 
 ## Usage

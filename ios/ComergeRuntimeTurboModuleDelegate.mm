@@ -1,5 +1,7 @@
 #import "ComergeRuntimeTurboModuleDelegate.h"
 #import "ComergeRuntimeSourceCode.h"
+#import "ComergeRuntimeLinkingManager.h"
+#import "ComergeRuntimeLinkingManagerLegacy.h"
 
 #import <string.h>
 #import <React/CoreModulesPlugins.h>
@@ -30,6 +32,12 @@
   if (strcmp(name, "SourceCode") == 0) {
     return ComergeRuntimeSourceCode.class;
   }
+  if (strcmp(name, "NativeLinkingManager") == 0) {
+    return ComergeRuntimeLinkingManager.class;
+  }
+  if (strcmp(name, "LinkingManager") == 0) {
+    return ComergeRuntimeLinkingManagerLegacy.class;
+  }
   return RCTCoreModulesClassProvider(name);
 }
 
@@ -37,6 +45,12 @@
 {
   if (moduleClass == ComergeRuntimeSourceCode.class) {
     return [[moduleClass alloc] initWithBundleURL:_bundleURL];
+  }
+  if (moduleClass == ComergeRuntimeLinkingManager.class) {
+    return [ComergeRuntimeLinkingManager new];
+  }
+  if (moduleClass == ComergeRuntimeLinkingManagerLegacy.class) {
+    return [ComergeRuntimeLinkingManagerLegacy new];
   }
   if (moduleClass == RCTNetworking.class) {
     return [[moduleClass alloc]

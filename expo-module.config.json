@@ -1,7 +1,8 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["ComergeRuntimeModule"]
+    "modules": ["ComergeRuntimeModule", "ComergeRuntimeExpoLinkingModule"],
+    "appDelegateSubscribers": ["ComergeRuntimeLinkingSubscriber"]
   },
   "android": {
     "modules": ["expo.modules.comergeruntime.ComergeRuntimeModule"]

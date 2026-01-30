@@ -85,6 +85,13 @@ class ComergeRuntimeView(
     if (runtime?.host != null) return
 
     try {
+      // Clear any deep link Intent data
+      try {
+        val activity = appContext.currentActivity
+        activity?.intent?.data = null
+        activity?.intent?.replaceExtras(Bundle())
+      } catch (_: Throwable) {}
+
       logger.d(ComergeRuntimeContracts.TAG, "maybeLoadMicroApp: appKey=$key path=$path")
 
       val app = context.applicationContext as android.app.Application

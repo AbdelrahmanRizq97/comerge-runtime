@@ -2,11 +2,29 @@
 
 #import "Runtime.h"
 #import "ComergeRuntimeTurboModuleDelegate.h"
+#import "ComergeRuntimeLinkingState.h"
 
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTDevLoadingViewSetEnabled.h>
 
 static const NSTimeInterval kMicroAppContextInitStartDelaySeconds = 0.2;
+
+static void ComergeClearInitialLinkingURL(void)
+{
+  Class linkingClass = NSClassFromString(@"RCTLinkingManager");
+  if (!linkingClass) {
+    return;
+  }
+
+  @try {
+    [linkingClass setValue:nil forKey:@"_initialURL"];
+  } @catch (__unused NSException *e) {
+  }
+  @try {
+    [linkingClass setValue:nil forKey:@"initialURL"];
+  } @catch (__unused NSException *e) {
+  }
+}
 
 @interface ComergeRuntimeView ()
 @property (nonatomic, strong) Runtime *runtime;
@@ -82,6 +100,9 @@ static const NSTimeInterval kMicroAppContextInitStartDelaySeconds = 0.2;
   }
   NSString *pathCopy = [self.bundlePath copy];
   NSInteger gen = self.loadGeneration;
+  [ComergeRuntimeLinkingState setMicroRuntimeActive:YES];
+  [ComergeRuntimeLinkingState clearInitialURL];
+  ComergeClearInitialLinkingURL();
   // Disable Dev overlays for this micro host and route fatals to NSLog
   @try { RCTRedBoxSetEnabled(NO); } @catch (__unused NSException *e) {}
   @try { RCTDevLoadingViewSetEnabled(NO); } @catch (__unused NSException *e) {}
@@ -140,6 +161,7 @@ static const NSTimeInterval kMicroAppContextInitStartDelaySeconds = 0.2;
 {
   self.loadGeneration += 1;
   [self.runtime stopAndDestroy];
+  [ComergeRuntimeLinkingState setMicroRuntimeActive:NO];
   if (self.surfaceView) {
     [self.surfaceView removeFromSuperview];
   }
@@ -155,6 +177,7 @@ static const NSTimeInterval kMicroAppContextInitStartDelaySeconds = 0.2;
 - (void)dealloc
 {
   [self unloadMicroApp];
+  [ComergeRuntimeLinkingState setMicroRuntimeActive:NO];
 }
 
 - (void)layoutSubviews
