@@ -9,6 +9,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -27,7 +28,9 @@ class ComergeRuntimeView(
   // Inputs from React props
   private var appKey: String? = null
   private var bundlePath: String? = null
+  private var runtimeId: String = ""
   private var initialProps: Map<String, Any?>? = null
+  private val onMessage by EventDispatcher<Map<String, Any>>()
 
   // Runtime objects
   private var runtime: Runtime? = null
@@ -43,6 +46,18 @@ class ComergeRuntimeView(
   init {
     reactAppContext?.addLifecycleEventListener(this)
     layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+  }
+
+  fun setRuntimeId(value: String?) {
+    val next = value?.trim().orEmpty()
+    if (next == runtimeId) return
+    if (runtimeId.isNotBlank()) {
+      ComergeRuntimeBridge.unregister(runtimeId, this)
+    }
+    runtimeId = next
+    if (runtimeId.isNotBlank()) {
+      ComergeRuntimeBridge.register(runtimeId, this)
+    }
   }
 
   fun setAppKey(value: String?) {
@@ -129,6 +144,25 @@ class ComergeRuntimeView(
     } catch (_: Throwable) {
       Bundle()
     }
+  }
+
+  fun dispatchMicroEnvelope(envelope: Map<String, Any?>): Boolean {
+    val payload = HashMap(envelope)
+    if ((payload["runtimeId"] as? String).isNullOrBlank() && runtimeId.isNotBlank()) {
+      payload["runtimeId"] = runtimeId
+    }
+    return try {
+      @Suppress("UNCHECKED_CAST")
+      onMessage(mapOf("envelope" to payload as Any))
+      true
+    } catch (_: Throwable) {
+      false
+    }
+  }
+
+  fun dispatchHostEnvelope(envelope: Map<String, Any?>): Boolean {
+    val r = runtime ?: return false
+    return r.emitBridgeMessageToMicro(envelope)
   }
 
   private fun tryStartIfPossible() {
@@ -256,6 +290,9 @@ class ComergeRuntimeView(
   override fun onHostDestroy() {
     runtime?.onHostDestroy(appContext.currentActivity)
     unloadMicroApp()
+    if (runtimeId.isNotBlank()) {
+      ComergeRuntimeBridge.unregister(runtimeId, this)
+    }
     reactAppContext?.removeLifecycleEventListener(this)
   }
 
@@ -294,6 +331,13 @@ class ComergeRuntimeView(
           logger.d(ComergeRuntimeContracts.TAG, "Started surface from onLayout after sizing")
         } catch (_: Throwable) {}
       }
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    if (runtimeId.isNotBlank()) {
+      ComergeRuntimeBridge.unregister(runtimeId, this)
     }
   }
 }

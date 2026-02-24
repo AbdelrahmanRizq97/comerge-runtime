@@ -3,6 +3,7 @@
 #import "Runtime.h"
 #import "ComergeRuntimeTurboModuleDelegate.h"
 #import "ComergeRuntimeLinkingState.h"
+#import "ComergeRuntimeTurboModuleProvider.h"
 
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTDevLoadingViewSetEnabled.h>
@@ -107,7 +108,8 @@ static void ComergeClearInitialLinkingURL(void)
   @try { RCTRedBoxSetEnabled(NO); } @catch (__unused NSException *e) {}
   @try { RCTDevLoadingViewSetEnabled(NO); } @catch (__unused NSException *e) {}
   NSURL *bundleURL = pathCopy.length > 0 ? [NSURL fileURLWithPath:pathCopy isDirectory:NO] : nil;
-  self.tmDelegate = [[ComergeRuntimeTurboModuleDelegate alloc] initWithBundleURL:bundleURL];
+  NSArray<id<ComergeRuntimeTurboModuleProvider>> *providers = [ComergeRuntimeTurboModuleRegistry providers];
+  self.tmDelegate = [[ComergeRuntimeTurboModuleDelegate alloc] initWithBundleURL:bundleURL providers:providers];
 
   Runtime *runtime = [[Runtime alloc] initWithBundlePath:pathCopy
                                turboModuleManagerDelegate:self.tmDelegate];

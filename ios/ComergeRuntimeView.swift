@@ -1,10 +1,14 @@
 import ExpoModulesCore
 
 public final class ComergeRuntimeExpoView: ExpoView {
+  public let onMessage = EventDispatcher()
+
   private let microAppView: UIView = {
     let viewClass = (NSClassFromString("ComergeRuntimeView") as? UIView.Type) ?? UIView.self
     return viewClass.init(frame: .zero)
   }()
+
+  private var runtimeId: String = ""
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -17,6 +21,12 @@ public final class ComergeRuntimeExpoView: ExpoView {
     microAppView.frame = bounds
   }
 
+  deinit {
+    if !runtimeId.isEmpty {
+      ComergeRuntimeBridge.shared.unregister(runtimeId: runtimeId, view: self)
+    }
+  }
+
   func setAppKey(_ value: String?) {
     microAppView.setValue(value ?? "", forKey: "appKey")
   }
@@ -27,5 +37,35 @@ public final class ComergeRuntimeExpoView: ExpoView {
 
   func setInitialProps(_ value: [String: Any]?) {
     microAppView.setValue((value ?? [:]) as NSDictionary, forKey: "initialProps")
+  }
+
+  func setRuntimeId(_ value: String?) {
+    let next = (value ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+    if runtimeId == next { return }
+    if !runtimeId.isEmpty {
+      ComergeRuntimeBridge.shared.unregister(runtimeId: runtimeId, view: self)
+    }
+    runtimeId = next
+    if !runtimeId.isEmpty {
+      ComergeRuntimeBridge.shared.register(runtimeId: runtimeId, view: self)
+    }
+  }
+
+  func dispatchMicroEnvelope(_ envelope: [String: Any]) -> Bool {
+    var nextEnvelope = envelope
+    if (nextEnvelope["runtimeId"] as? String)?.isEmpty != false, !runtimeId.isEmpty {
+      nextEnvelope["runtimeId"] = runtimeId
+    }
+    onMessage(["envelope": nextEnvelope])
+    return true
+  }
+
+  func dispatchHostEnvelope(_ envelope: [String: Any]) -> Bool {
+    NotificationCenter.default.post(
+      name: comergeRuntimeOnHostMessageNotification,
+      object: nil,
+      userInfo: ["envelope": envelope]
+    )
+    return true
   }
 }

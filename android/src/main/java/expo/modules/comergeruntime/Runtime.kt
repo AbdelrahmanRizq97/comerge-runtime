@@ -10,6 +10,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -17,6 +18,7 @@ import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.interfaces.fabric.ReactSurface
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
@@ -171,6 +173,33 @@ internal class Runtime private constructor(
     try {
       host?.onHostDestroy(activity)
     } catch (_: Throwable) {}
+  }
+
+  fun emitBridgeMessageToMicro(envelope: Map<String, Any?>): Boolean {
+    val context = getCurrentReactContext() ?: return false
+    return try {
+      @Suppress("UNCHECKED_CAST")
+      val nativeMap = Arguments.makeNativeMap(envelope as Map<String, Any>)
+      val payload = Arguments.createMap()
+      payload.putMap("envelope", nativeMap)
+      context
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+        .emit("onRuntimeMessage", payload)
+      true
+    } catch (_: Throwable) {
+      false
+    }
+  }
+
+  private fun getCurrentReactContext(): ReactContext? {
+    val currentHost = host ?: return null
+    return try {
+      val method = currentHost.javaClass.getMethod("getCurrentReactContext")
+      method.isAccessible = true
+      method.invoke(currentHost) as? ReactContext
+    } catch (_: Throwable) {
+      null
+    }
   }
 
   fun destroy(reason: String) {

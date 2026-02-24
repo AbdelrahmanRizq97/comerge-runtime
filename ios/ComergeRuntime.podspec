@@ -28,5 +28,6 @@ Pod::Spec.new do |s|
   s.public_header_files = [
     "ComergeRuntimeView.h",
     "ComergeRuntimeLinkingState.h",
+    "ComergeRuntimeTurboModuleProvider.h",
   ]
 end
