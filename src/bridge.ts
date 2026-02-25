@@ -65,6 +65,7 @@ export function isSystemEventEnvelope(value: unknown): value is ComergeRuntimeSy
     value.type === 'system.auth_get_token' ||
     value.type === 'system.auth_step_up_google' ||
     value.type === 'system.open_app_requested' ||
+    value.type === 'system.open_shell_settings_requested' ||
     value.type === 'system.sign_out_requested' ||
     value.type === 'system.account_deleted' ||
     value.type === 'system.session_invalid'

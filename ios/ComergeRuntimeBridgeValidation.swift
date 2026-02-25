@@ -5,6 +5,7 @@ internal enum ComergeRuntimeBridgeValidation {
     "system.auth_get_token",
     "system.auth_step_up_google",
     "system.open_app_requested",
+    "system.open_shell_settings_requested",
     "system.sign_out_requested",
     "system.account_deleted",
     "system.session_invalid",
