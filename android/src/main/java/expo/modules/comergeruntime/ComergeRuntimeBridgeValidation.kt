@@ -3,11 +3,12 @@ package expo.modules.comergeruntime
 internal object ComergeRuntimeBridgeValidation {
   fun isValidEnvelope(envelope: Map<String, Any?>, requireMicroSource: Boolean): Boolean {
     val v = envelope["v"]
+    val version = (v as? Number)?.toInt()
     val type = envelope["type"] as? String
     val requestId = envelope["requestId"] as? String
     val ts = envelope["ts"]
     val source = envelope["source"] as? String
-    if (v != 1) return false
+    if (version != 1) return false
     if (type.isNullOrBlank()) return false
     if (requestId.isNullOrBlank()) return false
     if (ts !is Number) return false
